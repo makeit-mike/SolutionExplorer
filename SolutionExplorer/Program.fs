@@ -8,36 +8,39 @@ let isNull (x: string) = match box obj with | null -> true | _ -> false
 let toTestedInt (x: string) =
     if isNull(x) || x.Trim().Length = 0 then -1 else Convert.ToInt32(x)
 
+let fileName (fullPath: string) =
+    fullPath.Substring(fullPath.LastIndexOf('\\') + 1)
+
+let rec getProperFileIndex(x: int): int =
+    let input = toTestedInt (Console.ReadLine())
+    if (input = -1 || input >= x) then
+        printfn "Unable to parse to an int. Please try again. . .\n"
+        getProperFileIndex(x)
+    else
+        input
+
+let getFullFilePaths(folderPath: string, fileType: string) = 
+     Directory.GetFiles(folderPath, fileType, SearchOption.AllDirectories) 
+            |> Array.map Path.GetFullPath 
+            |> Array.toList 
+            |> List.sort
+
 [<EntryPoint>]
 let main argv =
-    let handled = false
-
-    let folderPath = "C:\\Users\\mikei\\source\\repos\\"
+    let folderPath = "C:\\Users\\mikei\\source\\repos\\" // Replace with your Source/Repo folder that has all your SLN files.
 
     printfn $"Solutions in folder: {folderPath}\n"
 
-    let files = Directory.GetFiles(folderPath, "*.sln", SearchOption.AllDirectories) 
-                    |> Array.map Path.GetFileName 
+    let fullPaths = getFullFilePaths(folderPath, "*.sln")
 
-    files |> Array.iteri (fun i v -> printfn $"{i}: {v}")
-
-    let fullPaths = Directory.GetFiles(folderPath, "*.sln", SearchOption.AllDirectories) 
-                    |> Array.map Path.GetFullPath 
+    fullPaths |> List.iteri (fun i f -> printfn $"{i}: {fileName f}")
 
     printfn $"\n\nType the number of the Solution you would like to run. . .\n"
-    let line = Console.ReadLine()
 
-    let index = toTestedInt(line)
-
-    if (index = -1) then
-        printfn $"{line} was unable to parse to an int. Please try again. . .\n"
-    else 
-        printfn $"Opening file. . .\n"
+    let index = Convert.ToInt32(getProperFileIndex(fullPaths.Length))
 
     let file = fullPaths.[index]
 
     let _ = Process.Start("explorer.exe", file)
 
-    Environment.Exit(0)
-
-    0 // return an integer exit code
+    0 

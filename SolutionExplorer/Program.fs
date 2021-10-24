@@ -27,20 +27,20 @@ let getFullFilePaths(folderPath: string, fileType: string) =
 
 [<EntryPoint>]
 let main argv =
-    let folderPath = "C:\\Users\\mikei\\source\\repos\\" // Replace with your Source/Repo folder that has all your SLN files.
+    try
+        let folderPath = "C:\\Users\\mikei\\source\\repos\\" // Replace with your Source/Repo folder that has all your SLN files.
 
-    printfn $"Solutions in folder: {folderPath}\n"
+        printfn $"Solutions in folder: {folderPath}\n"
 
-    let fullPaths = getFullFilePaths(folderPath, "*.sln")
+        let fullPaths = getFullFilePaths(folderPath, "*.sln")
 
-    fullPaths |> List.iteri (fun i f -> printfn $"{i}: {fileName f}")
+        fullPaths 
+            |> List.iteri (fun i f -> printfn $"{i}: {fileName f}")
 
-    printfn $"\n\nType the number of the Solution you would like to run. . .\n"
+        printfn $"\n\nType the number of the Solution you would like to run. . .\n"
 
-    let index = Convert.ToInt32(getProperFileIndex(fullPaths.Length))
-
-    let file = fullPaths.[index]
-
-    let _ = Process.Start("explorer.exe", file)
-
-    0 
+        let _ = Process.Start("explorer.exe", fullPaths.[getProperFileIndex(fullPaths.Length)])
+        0
+    with ex ->
+        printfn "%A" ex 
+        -1 

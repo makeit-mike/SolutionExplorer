@@ -3,6 +3,19 @@ open System
 open System.IO
 open System.Diagnostics
 
+// BLOCK: BEGIN GLOBALS
+let folderPath = "C:\\Users\\mikei\\source\\repos\\"
+let defaultApp = "explorer.exe"
+
+let _APP_SUCCESS = 0
+let _APP_FAILURE = -1
+
+let msg_GetSolutionIndex = "\n\nType the number of the Solution you would like to run. . .\n"
+let msg_UnableToParseEx = "Unable to parse to an int. Please try again. . .\n"
+
+// BLOCK: BEGIN FUNCTIONS
+let log (x: string) = Console.WriteLine x
+
 let isNull (x: string) = match box obj with | null -> true | _ -> false 
 
 let toTestedInt (x: string) =
@@ -14,7 +27,7 @@ let fileName (fullPath: string) =
 let rec getProperFileIndex(x: int): int =
     let input = toTestedInt (Console.ReadLine())
     if (input = -1 || input >= x) then
-        printfn "Unable to parse to an int. Please try again. . .\n"
+        log msg_UnableToParseEx
         getProperFileIndex(x)
     else
         input
@@ -25,22 +38,21 @@ let getFullFilePaths(folderPath: string, fileType: string) =
             |> Array.toList 
             |> List.sort
 
+// BLOCK: BEGIN ENTRY POINT
 [<EntryPoint>]
 let main argv =
     try
-        let folderPath = "C:\\Users\\mikei\\source\\repos\\" // Replace with your Source/Repo folder that has all your SLN files.
-
-        printfn $"Solutions in folder: {folderPath}\n"
+        log $"Solutions in folder: {folderPath}\n"
 
         let fullPaths = getFullFilePaths(folderPath, "*.sln")
 
         fullPaths 
-            |> List.iteri (fun i f -> printfn $"{i}: {fileName f}")
+            |> List.iteri (fun i f -> log $"{i}: {fileName f}")
 
-        printfn $"\n\nType the number of the Solution you would like to run. . .\n"
+        log msg_GetSolutionIndex
 
-        let _ = Process.Start("explorer.exe", fullPaths.[getProperFileIndex(fullPaths.Length)])
-        0
+        let _ = Process.Start(defaultApp, fullPaths.[getProperFileIndex(fullPaths.Length)])
+        _APP_SUCCESS
     with ex ->
         printfn "%A" ex 
-        -1 
+        _APP_FAILURE 

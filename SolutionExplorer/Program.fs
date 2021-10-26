@@ -19,10 +19,12 @@ let readLine = Console.ReadLine()
 
 let log (x: string) = Console.WriteLine x
 
+let toInt(x: string) = Convert.ToInt32 x
+
 let isNull (x: string) = match box obj with | null -> true | _ -> false 
 
 let toTestedInt (x: string) =
-    if isNull(x) || x.Trim().Length = 0 then -1 else Convert.ToInt32(x)
+    if isNull x || x.Trim().Length = 0 then -1 else toInt x
 
 let fileName (fullPath: string) =
     fullPath.Substring(fullPath.LastIndexOf('\\') + 1)
@@ -32,12 +34,12 @@ let rec getIntInput(x: int): int =
     let input = toTestedInt inputStr
     if (input = -1 || input >= x) then
         log msg_UnableToParseEx
-        getIntInput(x)
+        x |> getIntInput
     else
         input
 
-let rec getIntInput_OptionalReturn(input: int, defaultReturn: int): int =
-    let input = toTestedInt (Console.ReadLine())
+let rec getIntInput_OptionalReturn(input: int, defaultReturn: int): int =  
+    let input = readLine |> toTestedInt 
     if (input = -1 || input >= input) then defaultReturn else input
 
 let getFullFilePaths(folderPath: string, fileType: string) = 
@@ -45,6 +47,7 @@ let getFullFilePaths(folderPath: string, fileType: string) =
             |> Array.map Path.GetFullPath 
             |> Array.toList 
             |> List.sort
+
 
 // BLOCK: BEGIN ENTRY POINT
 [<EntryPoint>]

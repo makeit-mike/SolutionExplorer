@@ -2,7 +2,6 @@
 open System
 open System.IO
 open System.Diagnostics
-open System.Linq
 
 // BLOCK: BEGIN GLOBALS
 let folderPath = "C:\\Users\\mikei\\source\\repos\\"
